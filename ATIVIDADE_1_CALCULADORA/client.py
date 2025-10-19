@@ -32,11 +32,11 @@ def connect():
                 continue
 
             # Lê os números do usuário
-	    x = int(input('Entre com o primeiro número: '))
+            x = int(input('Entre com o primeiro número: '))
             y = int(input('Entre com o segundo número: '))
 
             # Chama a operação correspondente no servidor
-	    if op == '1':
+            if op == '1':
                 res = client.add(grpcCalc_pb2.args(numOne=x, numTwo=y))
             elif op == '2':
                 res = client.sub(grpcCalc_pb2.args(numOne=x, numTwo=y))
