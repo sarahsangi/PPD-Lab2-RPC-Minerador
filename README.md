@@ -44,13 +44,13 @@ Na raiz do projeto, execute:
    
     ```bash
     python -m grpc_tools.protoc -I. --python_out=./ATIVIDADE_1_CALCULADORA --grpc_python_out=./ATIVIDADE_1_CALCULADORA ATIVIDADE_1_CALCULADORA/grpcCalc.proto
-    ```
+```
     
 **Atividade 2 – Minerador**
-   
-    ```bash
+
+   ```bash
     python -m grpc_tools.protoc -I. --python_out=./ATIVIDADE_2_MINERADOR --grpc_python_out=./ATIVIDADE_2_MINERADOR ATIVIDADE_2_MINERADOR/miner.proto
-    ```
+```
 ---
 
 ### 2.3. Execução das Aplicações
