@@ -26,7 +26,7 @@ message ChallengeArgs {
     string solution = 3;
 }
 
-// Mensagem “vazia” usada em algumas chamadas
+// Mensagem vazia usada em algumas chamadas
 message Void {}
 
 service api {
@@ -36,4 +36,5 @@ service api {
     rpc submitChallenge(ChallengeArgs) returns (IntegerResponse);
     rpc getWinner(TransactionID) returns (IntegerResponse);
     rpc getSolution(TransactionID) returns (SolutionData);
+
 }
