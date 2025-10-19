@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package miner;
+
+// Mensagens de Requisição
+
+// Requisição vazia, usada para funções sem parâmetros
+message Empty {}
+
+// Requisição que usa apenas o TransactionID
+message TransactionIDRequest {
+  int32 transactionID = 1;
+}
+
+// Requisição para submeter uma solução
+message SubmitChallengeRequest {
+  int32 transactionID = 1;
+  int32 clientID = 2;
+  string solution = 3; // String de entrada para o SHA-1 (ex: "hash_input")
+}
+
+// Mensagens de Resposta (Retornos)
+
+// Resposta para funções que retornam um único inteiro (ID, Challenge, Status, Winner, Submit status)
+message IntegerResponse {
+  int32 value = 1;
+}
+
+// Resposta para a função getSolution()
+message SolutionData {
+  int32 status = 1;     // 0: resolvido, 1: pendente, -1: inválido
+  string solution = 2;  // A string solução (se resolvida)
+  int32 challenge = 3;  // O valor do desafio (1-20)
+}
+
+// Definição do Serviço (As chamadas RPC)
+service Miner {
+  // 1. Retorna o ID da transação atual pendente
+  rpc getTransactionID (Empty) returns (IntegerResponse);
+
+  // 2. Retorna o valor do desafio (1-20)
+  rpc getChallenge (TransactionIDRequest) returns (IntegerResponse);
+
+  // 3. Retorna o status da transação
+  rpc getTransactionStatus (TransactionIDRequest) returns (IntegerResponse);
+
+  // 4. Submete uma solução e retorna o status da submissão
+  rpc submitChallenge (SubmitChallengeRequest) returns (IntegerResponse);
+
+  // 5. Retorna o ClientID do vencedor
+  rpc getWinner (TransactionIDRequest) returns (IntegerResponse);
+
+  // 6. Retorna status, solução e desafio
+  rpc getSolution (TransactionIDRequest) returns (SolutionData);
+}
