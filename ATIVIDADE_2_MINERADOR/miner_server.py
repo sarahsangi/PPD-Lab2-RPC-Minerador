@@ -1,187 +1,106 @@
 import grpc
 from concurrent import futures
-import time
+import threading
 import hashlib
 import random
-import threading 
-
-# Importa os arquivos gerados
 import miner_pb2
 import miner_pb2_grpc
 
-# --- Variáveis Globais e Configurações ---
-_ONE_DAY_IN_SECONDS = 60 * 60 * 24
-PORT = '8080' 
+# Dicionário principal: guarda todas as transações e seus dados
+transactions = {}
+lock = threading.Lock()  # Garante acesso seguro ao dicionário entre threads
 
-# Dicionário de Transações (Tabela de Registros)
-TRANSACTIONS = {}
-CURRENT_TRANSACTION_ID = 0 
-# Trava para acesso seguro à tabela de transações
-TABLE_LOCK = threading.Lock() 
-
-# --- Funções Auxiliares do Servidor ---
-
+# Gera um novo desafio e o adiciona à tabela
 def _generate_new_challenge(transaction_id):
-    """Gera um novo desafio (1-5) e TransactionID inicial."""
-    global CURRENT_TRANSACTION_ID
-    
-    # Gera um desafio aleatório entre 1 (fácil) e 5 (difícil)
-    challenge_level = random.randint(1, 5)
-    
-    with TABLE_LOCK:
-        TRANSACTIONS[transaction_id] = {
-            'challenge': challenge_level,
-            'solution': "",     
-            'winner': -1,       # -1 se pendente
-            'solved': False
-        }
-        CURRENT_TRANSACTION_ID = transaction_id
-        
-    print(f"--- NOVO DESAFIO GERADO ---")
-    print(f"TransactionID: {transaction_id}, Nível do Desafio (Zeros Iniciais): {challenge_level}")
+    challenge_level = random.randint(1, 5)  # nível de dificuldade (nº de zeros no hash)
+    transactions[transaction_id] = {
+        "TransactionID": transaction_id,
+        "Challenge": challenge_level,
+        "Solution": "",
+        "Winner": -1
+    }
+    print(f"Novo desafio criado -> TransactionID: {transaction_id}, Challenge: {challenge_level}")
 
-def _check_challenge(challenge_level, solution_string):
-    """Verifica se a string 'solution_string' resolve o desafio SHA-1."""
-    if not solution_string:
-        return False, ""
-        
-    # Calcula o hash SHA-1 da string submetida
-    hash_object = hashlib.sha1(solution_string.encode('utf-8'))
-    hex_dig = hash_object.hexdigest()
-    
-    # Verifica se o hash começa com a quantidade necessária de zeros
-    target_prefix = '0' * challenge_level
-    
-    return hex_dig.startswith(target_prefix), hex_dig
+# Implementação dos métodos RPC do servidor
+class MinerService(miner_pb2_grpc.apiServicer):
 
-# --- Implementação do Serviço RPC ---
-
-class MinerServicer(miner_pb2_grpc.MinerServicer):
-    
     def getTransactionID(self, request, context):
-        """Retorna o valor atual da transação com desafio pendente."""
-        with TABLE_LOCK:
-            return miner_pb2.IntegerResponse(value=CURRENT_TRANSACTION_ID)
+        with lock:
+            # Busca a transação atual (ainda sem vencedor)
+            for t_id, data in transactions.items():
+                if data["Winner"] == -1:
+                    return miner_pb2.IntegerResponse(value=t_id)
+            # Caso todas tenham vencedor, gera nova
+            new_id = len(transactions)
+            _generate_new_challenge(new_id)
+            return miner_pb2.IntegerResponse(value=new_id)
 
     def getChallenge(self, request, context):
-        """Retorna o valor do desafio associado ao TransactionID."""
-        tx_id = request.transactionID
-        with TABLE_LOCK:
-            if tx_id not in TRANSACTIONS:
-                return miner_pb2.IntegerResponse(value=-1) # ID inválido
-            
-            return miner_pb2.IntegerResponse(value=TRANSACTIONS[tx_id]['challenge'])
+        t_id = request.transactionId
+        if t_id in transactions:
+            return miner_pb2.IntegerResponse(value=transactions[t_id]["Challenge"])
+        return miner_pb2.IntegerResponse(value=-1)
 
     def getTransactionStatus(self, request, context):
-        """Retorna 0 resolvido, 1 pendente, -1 inválido."""
-        tx_id = request.transactionID
-        
-        with TABLE_LOCK:
-            if tx_id not in TRANSACTIONS:
-                return miner_pb2.IntegerResponse(value=-1) # ID inválido
-            
-            tx_data = TRANSACTIONS[tx_id]
-        
-        # Retorna 0 (resolvido) ou 1 (pendente)
-        return miner_pb2.IntegerResponse(value=0 if tx_data['solved'] else 1)
-
-    def getWinner(self, request, context):
-        """Retorna o ClientID do vencedor (0 se não tem, -1 se ID inválido)."""
-        tx_id = request.transactionID
-        with TABLE_LOCK:
-            if tx_id not in TRANSACTIONS:
-                return miner_pb2.IntegerResponse(value=-1) # ID inválido
-            
-            winner_id = TRANSACTIONS[tx_id]['winner']
-            # Retorna 0 se não tem vencedor (pendente)
-            return miner_pb2.IntegerResponse(value=winner_id if winner_id != -1 else 0)
-
-    def getSolution(self, request, context):
-        """Retorna status, solução e desafio associado."""
-        tx_id = request.transactionID
-        with TABLE_LOCK:
-            if tx_id not in TRANSACTIONS:
-                return miner_pb2.SolutionData(status=-1, solution="", challenge=0) 
-
-            tx_data = TRANSACTIONS[tx_id]
-            status = 0 if tx_data['solved'] else 1
-            
-            return miner_pb2.SolutionData(
-                status=status,
-                solution=tx_data['solution'],
-                challenge=tx_data['challenge']
-            )
+        t_id = request.transactionId
+        if t_id not in transactions:
+            return miner_pb2.IntegerResponse(value=-1)
+        # 0 = resolvido, 1 = pendente
+        status = 1 if transactions[t_id]["Winner"] == -1 else 0
+        return miner_pb2.IntegerResponse(value=status)
 
     def submitChallenge(self, request, context):
-        """Submete uma solução. Retorna 1 válida, 0 inválida, 2 resolvido, -1 inválido ID."""
-        
-        tx_id = request.transactionID
-        client_id = request.clientID
-        solution = request.solution
-        next_tx_id = tx_id + 1 # Determina o próximo ID fora do lock
+        t_id = request.transactionId
+        if t_id not in transactions:
+            return miner_pb2.IntegerResponse(value=-1)
 
-        # Tenta pegar dados da transação
-        with TABLE_LOCK:
-            if tx_id not in TRANSACTIONS:
-                return miner_pb2.IntegerResponse(value=-1) 
+        # Se já houver vencedor, retorna 2
+        if transactions[t_id]["Winner"] != -1:
+            return miner_pb2.IntegerResponse(value=2)
 
-            tx_data = TRANSACTIONS[tx_id]
-
-            if tx_data['solved']:
-                print(f"Submissão ignorada de Cliente {client_id}: Desafio {tx_id} já resolvido.")
-                return miner_pb2.IntegerResponse(value=2) 
-
-            challenge_level = tx_data['challenge']
-        
-        # Verifica a solução SHA-1 (pode ser demorado, fora do lock)
-        is_valid, final_hash = _check_challenge(challenge_level, solution)
-
-        if is_valid:
-            # Reentra no lock APENAS para registrar o resultado
-            with TABLE_LOCK:
-                # Checa novamente se alguém ganhou em concorrência
-                if tx_data['solved']:
-                    print(f"Corrida perdida: Cliente {client_id} chegou tarde.")
-                    return miner_pb2.IntegerResponse(value=2)
-
-                # Registra o vencedor
-                tx_data['solution'] = final_hash 
-                tx_data['winner'] = client_id
-                tx_data['solved'] = True
-                
-                print(f"\n---!!! VENCEDOR !!!---")
-                print(f"Transação {tx_id} resolvida pelo Cliente {client_id}")
-                
-                # O RETORNO RPC PODE ACONTECER AQUI, DEPOIS DO REGISTRO
-                # A geração do próximo desafio (que pode demorar) será feita abaixo
-                
-            # Cria a próxima transação FORA DO LOCK PRINCIPAL (otimização)
-            _generate_new_challenge(next_tx_id)
-            
-            return miner_pb2.IntegerResponse(value=1) # Solução válida
+        # Verifica se o hash da solução atende o desafio
+        challenge = transactions[t_id]["Challenge"]
+        sha1_hash = hashlib.sha1(request.solution.encode()).hexdigest()
+        if sha1_hash.startswith("0" * challenge):
+            with lock:
+                transactions[t_id]["Solution"] = request.solution
+                transactions[t_id]["Winner"] = request.clientId
+                print(f"Transação {t_id} solucionada pelo cliente {request.clientId}")
+                _generate_new_challenge(len(transactions))
+            return miner_pb2.IntegerResponse(value=1)
         else:
-            print(f"Submissão inválida de Cliente {client_id} para Transação {tx_id}.")
-            return miner_pb2.IntegerResponse(value=0) # Solução inválida
+            return miner_pb2.IntegerResponse(value=0)
 
+    def getWinner(self, request, context):
+        t_id = request.transactionId
+        if t_id not in transactions:
+            return miner_pb2.IntegerResponse(value=-1)
+        winner = transactions[t_id]["Winner"]
+        return miner_pb2.IntegerResponse(value=winner)
 
+    def getSolution(self, request, context):
+        t_id = request.transactionId
+        if t_id not in transactions:
+            return miner_pb2.SolutionData(status=-1, solution="", challenge=-1)
+        data = transactions[t_id]
+        status = 1 if data["Winner"] == -1 else 0
+        return miner_pb2.SolutionData(
+            status=status,
+            solution=data["Solution"],
+            challenge=data["Challenge"]
+        )
+
+# Inicializa o servidor e mantém ele rodando até interrupção manual
 def serve():
-    # Garante que o desafio TransactionID = 0 seja gerado ao iniciar
-    _generate_new_challenge(0)
-
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    miner_pb2_grpc.add_MinerServicer_to_server(MinerServicer(), server)
-    
-    server.add_insecure_port(f'localhost:{PORT}')
+    miner_pb2_grpc.add_apiServicer_to_server(MinerService(), server)
+    server.add_insecure_port('[::]:8080')
     server.start()
-    print(f"Servidor Minerador gRPC iniciado em localhost:{PORT}. Aguardando clientes...")
-    
-    try:
-        # Mantém o servidor rodando em loop
-        while True:
-            time.sleep(_ONE_DAY_IN_SECONDS)
-    except KeyboardInterrupt:
-        print("Servidor desligando...")
-        server.stop(0)
+    print("Servidor RPC de mineração rodando na porta 8080...")
 
-if __name__ == '__main__':
+    # Gera o primeiro desafio (TransactionID = 0)
+    _generate_new_challenge(0)
+    server.wait_for_termination()
+
+if __name__ == "__main__":
     serve()

@@ -25,9 +25,8 @@ if _version_not_supported:
     )
 
 
-class MinerStub(object):
-    """Definição do Serviço (As chamadas RPC)
-    """
+class apiStub(object):
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -36,127 +35,119 @@ class MinerStub(object):
             channel: A grpc.Channel.
         """
         self.getTransactionID = channel.unary_unary(
-                '/miner.Miner/getTransactionID',
-                request_serializer=miner__pb2.Empty.SerializeToString,
+                '/main.api/getTransactionID',
+                request_serializer=miner__pb2.Void.SerializeToString,
                 response_deserializer=miner__pb2.IntegerResponse.FromString,
                 _registered_method=True)
         self.getChallenge = channel.unary_unary(
-                '/miner.Miner/getChallenge',
-                request_serializer=miner__pb2.TransactionIDRequest.SerializeToString,
+                '/main.api/getChallenge',
+                request_serializer=miner__pb2.TransactionID.SerializeToString,
                 response_deserializer=miner__pb2.IntegerResponse.FromString,
                 _registered_method=True)
         self.getTransactionStatus = channel.unary_unary(
-                '/miner.Miner/getTransactionStatus',
-                request_serializer=miner__pb2.TransactionIDRequest.SerializeToString,
+                '/main.api/getTransactionStatus',
+                request_serializer=miner__pb2.TransactionID.SerializeToString,
                 response_deserializer=miner__pb2.IntegerResponse.FromString,
                 _registered_method=True)
         self.submitChallenge = channel.unary_unary(
-                '/miner.Miner/submitChallenge',
-                request_serializer=miner__pb2.SubmitChallengeRequest.SerializeToString,
+                '/main.api/submitChallenge',
+                request_serializer=miner__pb2.ChallengeArgs.SerializeToString,
                 response_deserializer=miner__pb2.IntegerResponse.FromString,
                 _registered_method=True)
         self.getWinner = channel.unary_unary(
-                '/miner.Miner/getWinner',
-                request_serializer=miner__pb2.TransactionIDRequest.SerializeToString,
+                '/main.api/getWinner',
+                request_serializer=miner__pb2.TransactionID.SerializeToString,
                 response_deserializer=miner__pb2.IntegerResponse.FromString,
                 _registered_method=True)
         self.getSolution = channel.unary_unary(
-                '/miner.Miner/getSolution',
-                request_serializer=miner__pb2.TransactionIDRequest.SerializeToString,
+                '/main.api/getSolution',
+                request_serializer=miner__pb2.TransactionID.SerializeToString,
                 response_deserializer=miner__pb2.SolutionData.FromString,
                 _registered_method=True)
 
 
-class MinerServicer(object):
-    """Definição do Serviço (As chamadas RPC)
-    """
+class apiServicer(object):
+    """Missing associated documentation comment in .proto file."""
 
     def getTransactionID(self, request, context):
-        """1. Retorna o ID da transação atual pendente
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def getChallenge(self, request, context):
-        """2. Retorna o valor do desafio (1-20)
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def getTransactionStatus(self, request, context):
-        """3. Retorna o status da transação
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def submitChallenge(self, request, context):
-        """4. Submete uma solução e retorna o status da submissão
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def getWinner(self, request, context):
-        """5. Retorna o ClientID do vencedor
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def getSolution(self, request, context):
-        """6. Retorna status, solução e desafio
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_MinerServicer_to_server(servicer, server):
+def add_apiServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'getTransactionID': grpc.unary_unary_rpc_method_handler(
                     servicer.getTransactionID,
-                    request_deserializer=miner__pb2.Empty.FromString,
+                    request_deserializer=miner__pb2.Void.FromString,
                     response_serializer=miner__pb2.IntegerResponse.SerializeToString,
             ),
             'getChallenge': grpc.unary_unary_rpc_method_handler(
                     servicer.getChallenge,
-                    request_deserializer=miner__pb2.TransactionIDRequest.FromString,
+                    request_deserializer=miner__pb2.TransactionID.FromString,
                     response_serializer=miner__pb2.IntegerResponse.SerializeToString,
             ),
             'getTransactionStatus': grpc.unary_unary_rpc_method_handler(
                     servicer.getTransactionStatus,
-                    request_deserializer=miner__pb2.TransactionIDRequest.FromString,
+                    request_deserializer=miner__pb2.TransactionID.FromString,
                     response_serializer=miner__pb2.IntegerResponse.SerializeToString,
             ),
             'submitChallenge': grpc.unary_unary_rpc_method_handler(
                     servicer.submitChallenge,
-                    request_deserializer=miner__pb2.SubmitChallengeRequest.FromString,
+                    request_deserializer=miner__pb2.ChallengeArgs.FromString,
                     response_serializer=miner__pb2.IntegerResponse.SerializeToString,
             ),
             'getWinner': grpc.unary_unary_rpc_method_handler(
                     servicer.getWinner,
-                    request_deserializer=miner__pb2.TransactionIDRequest.FromString,
+                    request_deserializer=miner__pb2.TransactionID.FromString,
                     response_serializer=miner__pb2.IntegerResponse.SerializeToString,
             ),
             'getSolution': grpc.unary_unary_rpc_method_handler(
                     servicer.getSolution,
-                    request_deserializer=miner__pb2.TransactionIDRequest.FromString,
+                    request_deserializer=miner__pb2.TransactionID.FromString,
                     response_serializer=miner__pb2.SolutionData.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'miner.Miner', rpc_method_handlers)
+            'main.api', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('miner.Miner', rpc_method_handlers)
+    server.add_registered_method_handlers('main.api', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class Miner(object):
-    """Definição do Serviço (As chamadas RPC)
-    """
+class api(object):
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def getTransactionID(request,
@@ -172,8 +163,8 @@ class Miner(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/miner.Miner/getTransactionID',
-            miner__pb2.Empty.SerializeToString,
+            '/main.api/getTransactionID',
+            miner__pb2.Void.SerializeToString,
             miner__pb2.IntegerResponse.FromString,
             options,
             channel_credentials,
@@ -199,8 +190,8 @@ class Miner(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/miner.Miner/getChallenge',
-            miner__pb2.TransactionIDRequest.SerializeToString,
+            '/main.api/getChallenge',
+            miner__pb2.TransactionID.SerializeToString,
             miner__pb2.IntegerResponse.FromString,
             options,
             channel_credentials,
@@ -226,8 +217,8 @@ class Miner(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/miner.Miner/getTransactionStatus',
-            miner__pb2.TransactionIDRequest.SerializeToString,
+            '/main.api/getTransactionStatus',
+            miner__pb2.TransactionID.SerializeToString,
             miner__pb2.IntegerResponse.FromString,
             options,
             channel_credentials,
@@ -253,8 +244,8 @@ class Miner(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/miner.Miner/submitChallenge',
-            miner__pb2.SubmitChallengeRequest.SerializeToString,
+            '/main.api/submitChallenge',
+            miner__pb2.ChallengeArgs.SerializeToString,
             miner__pb2.IntegerResponse.FromString,
             options,
             channel_credentials,
@@ -280,8 +271,8 @@ class Miner(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/miner.Miner/getWinner',
-            miner__pb2.TransactionIDRequest.SerializeToString,
+            '/main.api/getWinner',
+            miner__pb2.TransactionID.SerializeToString,
             miner__pb2.IntegerResponse.FromString,
             options,
             channel_credentials,
@@ -307,8 +298,8 @@ class Miner(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/miner.Miner/getSolution',
-            miner__pb2.TransactionIDRequest.SerializeToString,
+            '/main.api/getSolution',
+            miner__pb2.TransactionID.SerializeToString,
             miner__pb2.SolutionData.FromString,
             options,
             channel_credentials,

@@ -24,23 +24,23 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0bminer.proto\x12\x05miner\"\x07\n\x05\x45mpty\"-\n\x14TransactionIDRequest\x12\x15\n\rtransactionID\x18\x01 \x01(\x05\"S\n\x16SubmitChallengeRequest\x12\x15\n\rtransactionID\x18\x01 \x01(\x05\x12\x10\n\x08\x63lientID\x18\x02 \x01(\x05\x12\x10\n\x08solution\x18\x03 \x01(\t\" \n\x0fIntegerResponse\x12\r\n\x05value\x18\x01 \x01(\x05\"C\n\x0cSolutionData\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x10\n\x08solution\x18\x02 \x01(\t\x12\x11\n\tchallenge\x18\x03 \x01(\x05\x32\xa0\x03\n\x05Miner\x12\x38\n\x10getTransactionID\x12\x0c.miner.Empty\x1a\x16.miner.IntegerResponse\x12\x43\n\x0cgetChallenge\x12\x1b.miner.TransactionIDRequest\x1a\x16.miner.IntegerResponse\x12K\n\x14getTransactionStatus\x12\x1b.miner.TransactionIDRequest\x1a\x16.miner.IntegerResponse\x12H\n\x0fsubmitChallenge\x12\x1d.miner.SubmitChallengeRequest\x1a\x16.miner.IntegerResponse\x12@\n\tgetWinner\x12\x1b.miner.TransactionIDRequest\x1a\x16.miner.IntegerResponse\x12?\n\x0bgetSolution\x12\x1b.miner.TransactionIDRequest\x1a\x13.miner.SolutionDatab\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0bminer.proto\x12\x04main\" \n\x0fIntegerResponse\x12\r\n\x05value\x18\x01 \x01(\x05\"C\n\x0cSolutionData\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x10\n\x08solution\x18\x02 \x01(\t\x12\x11\n\tchallenge\x18\x03 \x01(\x05\"&\n\rTransactionID\x12\x15\n\rtransactionId\x18\x01 \x01(\x05\"J\n\rChallengeArgs\x12\x15\n\rtransactionId\x18\x01 \x01(\x05\x12\x10\n\x08\x63lientId\x18\x02 \x01(\x05\x12\x10\n\x08solution\x18\x03 \x01(\t\"\x06\n\x04Void2\xec\x02\n\x03\x61pi\x12\x35\n\x10getTransactionID\x12\n.main.Void\x1a\x15.main.IntegerResponse\x12:\n\x0cgetChallenge\x12\x13.main.TransactionID\x1a\x15.main.IntegerResponse\x12\x42\n\x14getTransactionStatus\x12\x13.main.TransactionID\x1a\x15.main.IntegerResponse\x12=\n\x0fsubmitChallenge\x12\x13.main.ChallengeArgs\x1a\x15.main.IntegerResponse\x12\x37\n\tgetWinner\x12\x13.main.TransactionID\x1a\x15.main.IntegerResponse\x12\x36\n\x0bgetSolution\x12\x13.main.TransactionID\x1a\x12.main.SolutionDatab\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'miner_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_EMPTY']._serialized_start=22
-  _globals['_EMPTY']._serialized_end=29
-  _globals['_TRANSACTIONIDREQUEST']._serialized_start=31
-  _globals['_TRANSACTIONIDREQUEST']._serialized_end=76
-  _globals['_SUBMITCHALLENGEREQUEST']._serialized_start=78
-  _globals['_SUBMITCHALLENGEREQUEST']._serialized_end=161
-  _globals['_INTEGERRESPONSE']._serialized_start=163
-  _globals['_INTEGERRESPONSE']._serialized_end=195
-  _globals['_SOLUTIONDATA']._serialized_start=197
-  _globals['_SOLUTIONDATA']._serialized_end=264
-  _globals['_MINER']._serialized_start=267
-  _globals['_MINER']._serialized_end=683
+  _globals['_INTEGERRESPONSE']._serialized_start=21
+  _globals['_INTEGERRESPONSE']._serialized_end=53
+  _globals['_SOLUTIONDATA']._serialized_start=55
+  _globals['_SOLUTIONDATA']._serialized_end=122
+  _globals['_TRANSACTIONID']._serialized_start=124
+  _globals['_TRANSACTIONID']._serialized_end=162
+  _globals['_CHALLENGEARGS']._serialized_start=164
+  _globals['_CHALLENGEARGS']._serialized_end=238
+  _globals['_VOID']._serialized_start=240
+  _globals['_VOID']._serialized_end=246
+  _globals['_API']._serialized_start=249
+  _globals['_API']._serialized_end=613
 # @@protoc_insertion_point(module_scope)
