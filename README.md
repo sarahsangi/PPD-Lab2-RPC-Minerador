@@ -23,6 +23,7 @@ O projeto segue o padrão Cliente/Servidor e está dividido em duas pastas princ
 
 1. Ter o **Python 3.x** instalado (recomendado: 3.10 ou superior).  
 2. Instalar as dependências necessárias:
+   
    **Dependências:** Instale as bibliotecas necessárias (`grpcio` e `pybreaker`).
    
     ```bash
