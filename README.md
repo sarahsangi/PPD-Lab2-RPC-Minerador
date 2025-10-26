@@ -1,7 +1,7 @@
 # PPD - Laboratório II: Sistema Distribuído RPC (Calculadora e Minerador)
 
 Este projeto implementa um sistema distribuído no modelo **Cliente/Servidor**, utilizando o conceito de **Chamada de Procedimento Remoto (RPC)** com a tecnologia **gRPC** em Python.  
-O trabalho foi dividido em duas partes: uma **calculadora distribuída** e um **minerador de criptomoedas com execução concorrente**.
+O trabalho foi dividido em duas partes: uma **calculadora distribuída** e um **protótipo de minerador de criptomoedas com execução concorrente**.
 
 **Aluna:** Sarah Candido Sangi  
 **Disciplina:** Programação Paralela e Distribuída (PPD)
@@ -10,29 +10,23 @@ O trabalho foi dividido em duas partes: uma **calculadora distribuída** e um **
 
 ## 1. Organização do Repositório
 
-O projeto segue o padrão Cliente/Servidor e está dividido em duas pastas principais:
+O projeto está organizado em duas pastas principais, separando as atividades:
 
-1. **`ATIVIDADE_1_CALCULADORA/`** – Implementação de uma calculadora simples utilizando RPC.  
+1. **`ATIVIDADE_1_CALCULADORA/`** – Implementação de uma calculadora RPC.  
 2. **`ATIVIDADE_2_MINERADOR/`** – Protótipo de mineração de criptomoedas com uso de múltiplas *threads*.
 
 ---
 
-## 2. Instruções de Execução
+## 2. Instruções para Compilação e Execução
 
 ### 2.1. Requisitos
 
-1. Ter o **Python 3.x** instalado (recomendado: 3.10 ou superior).  
+1. Ter o **Python 3.x** instalado.  
 2. Instalar as dependências necessárias:
-   
-   **Dependências:** Instale as bibliotecas necessárias (`grpcio` e `pybreaker`).
-   
+      
     ```bash
     pip install grpcio grpcio-tools pybreaker
     ```
-
-> Obs.: O módulo `pybreaker` é utilizado apenas na calculadora, para controlar falhas de conexão (padrão *Circuit Breaker*).
-
----
 
 ### 2.2. Geração dos Stubs RPC
 
@@ -51,7 +45,6 @@ Na raiz do projeto, execute:
    ```bash
     python -m grpc_tools.protoc -I. --python_out=./ATIVIDADE_2_MINERADOR --grpc_python_out=./ATIVIDADE_2_MINERADOR ATIVIDADE_2_MINERADOR/miner.proto
    ```
----
 
 ### 2.3. Execução das Aplicações
 
@@ -64,11 +57,21 @@ Na raiz do projeto, execute:
 
 ---
 
-## 3. Relatório Técnico
+## 3. Relatório Técnico (Metodologia e Resultados Encontrados)
 
-### Atividade 1: Calculadora RPC
+### 3.1 Metodologia de Implementação
 
-A aplicação da calculadora foi implementada com base no modelo Cliente/Servidor, utilizando o gRPC para comunicação remota entre as funções.
+A arquitetura Cliente/Servidor foi construída utilizando o **gRPC em Python**, aproveitando a geração automática de código (stubs) a partir da definição da interface (.proto).
+
+**Concorrência e Sincronização**
+
+ - **No Cliente (Mine)**: A função de mineração utiliza **múltiplas threads** para realizar a busca da solução SHA-1 (nonce) localmente. Este paralelismo atende à sugestão das instruções, otimizando o tempo de descoberta da Solution.
+
+ - **No Servidor**: Foi implementado o uso de mecanismos de sincronização (locks) para garantir que o acesso e a alteração da tabela de transações (TRANSACTIONS) sejam atômicos, prevenindo race conditions quando múltiplos clientes submetem soluções simultaneamente.
+
+### 3.2. Testes e Resultados Encontrados
+
+#### Atividade 1: Calculadora RPC
 
 | Requisito | Status | Descrição |
 |:-----------|:--------|:-----------|
@@ -81,16 +84,14 @@ A aplicação da calculadora foi implementada com base no modelo Cliente/Servido
 
 ### Atividade 2: Minerador RPC
 
-O projeto cumpre o requisito de construir um protótipo Cliente/Servidor de minerador de criptomoedas em Python/gRPC.
-
 | Requisito | Status | Descrição |
 |:-----------|:--------|:-----------|
-| **Tabela de transações** | Cumprido | O servidor armazena TransactionID, Challenge, Solution e Winner. |
+| **Estrutura de Dados** | Cumprido | O Servidor mantém a tabela de registros com TransactionID, Challenge, Solution e Winner. O desafio 0 é gerado ao iniciar. |
 | **Interface RPC completa** | Cumprido | Todos os métodos solicitados foram implementados (`getTransactionID`, `getChallenge`, `submitChallenge`, etc). |
 | **Geração de desafios** | Cumprido | Um novo desafio é criado automaticamente após cada solução válida. |
-| **Concorrência no cliente** | Cumprido | O cliente utiliza múltiplas *threads* para tentar encontrar a solução. |
-| **Validação do hash** | Cumprido | O servidor verifica se o hash começa com a quantidade exigida de zeros. |
-| **Prova de Trabalho (PoW)** | Cumprido | O ciclo completo de mineração, submissão e validação foi reproduzido com sucesso. |
+| **Ciclo de Mineração (Mine)** | Cumprido |O método Mine do cliente executa os 6 passos, desde a busca do desafio até a submissão da solução (passos 1 a 6). |
+| **Validação da Prova de Trabalho** | Cumprido | O Servidor valida o hash SHA-1 submetido. O retorno 1 (Solução Válida) é emitido após o registro do ClientID vencedor e a criação do próximo desafio. |
+| **Consultas de Estado** | Cumprido | As consultas para transações resolvidas confirmam o registro da Solution e do Winner, e o status da transação é retornado como RESOLVIDA. |
 
 
 ## 4. Vídeo de Demonstração
