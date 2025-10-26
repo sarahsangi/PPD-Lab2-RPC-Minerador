@@ -81,9 +81,7 @@ A arquitetura Cliente/Servidor foi construída utilizando o **gRPC em Python**, 
 | **Circuit Breaker** | Cumprido | Evita tentativas de reconexão infinitas. |
 | **Comunicação RPC** | Cumprido | Cliente e servidor se comunicam via stubs gRPC. |
 
----
-
-### Atividade 2: Minerador RPC
+#### Atividade 2: Minerador RPC
 
 | Requisito | Status | Descrição |
 |:-----------|:--------|:-----------|
