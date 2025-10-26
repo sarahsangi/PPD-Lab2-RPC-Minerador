@@ -6,7 +6,7 @@ import random
 import miner_pb2
 import miner_pb2_grpc
 
-# Dicionário principal: guarda todas as transações e seus dados
+# Dicionário principal, guarda todas as transações e seus dados
 transactions = {}
 lock = threading.Lock()  # Garante acesso seguro ao dicionário entre threads
 
@@ -103,4 +103,5 @@ def serve():
     server.wait_for_termination()
 
 if __name__ == "__main__":
+
     serve()
