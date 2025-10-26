@@ -92,6 +92,7 @@ A arquitetura Cliente/Servidor foi construída utilizando o **gRPC em Python**, 
 | **Validação da Prova de Trabalho** | Cumprido | O Servidor valida o hash SHA-1 submetido. O retorno 1 (Solução Válida) é emitido após o registro do ClientID vencedor e a criação do próximo desafio. |
 | **Consultas de Estado** | Cumprido | As consultas para transações resolvidas confirmam o registro da Solution e do Winner, e o status da transação é retornado como RESOLVIDA. |
 
+---
 
 ## 4. Vídeo de Demonstração
 
