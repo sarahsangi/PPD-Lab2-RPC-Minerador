@@ -98,4 +98,4 @@ A arquitetura Cliente/Servidor foi construída utilizando o **gRPC em Python**, 
 
 A execução completa das duas atividades e a validação das funcionalidades principais podem ser vistas no vídeo de demonstração.
 
-**Link para o vídeo:** [adicionar link após a gravação]
+**Link para o vídeo:** [https://youtu.be/F1WrTHQf6vQ]
