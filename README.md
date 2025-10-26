@@ -1,6 +1,7 @@
 # PPD - Laboratório II: Sistema Distribuído RPC (Calculadora e Minerador)
 
 Este projeto implementa um sistema distribuído no modelo **Cliente/Servidor**, utilizando o conceito de **Chamada de Procedimento Remoto (RPC)** com a tecnologia **gRPC** em Python.  
+
 O trabalho foi dividido em duas partes: uma **calculadora distribuída** e um **protótipo de minerador de criptomoedas com execução concorrente**.
 
 **Aluna:** Sarah Candido Sangi  
@@ -59,7 +60,7 @@ Na raiz do projeto, execute:
 
 ## 3. Relatório Técnico (Metodologia e Resultados Encontrados)
 
-### 3.1 Metodologia de Implementação
+### 3.1. Metodologia de Implementação
 
 A arquitetura Cliente/Servidor foi construída utilizando o **gRPC em Python**, aproveitando a geração automática de código (stubs) a partir da definição da interface (.proto).
 
